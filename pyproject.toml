@@ -8,4 +8,6 @@ dependencies = [
     "dimod>=0.12.21",
     "matplotlib>=3.10.8",
     "pandas>=3.0.1",
+    "qiskit>=2.3.1",
+    "qiskit-optimization>=0.7.0",
 ]
