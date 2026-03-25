@@ -38,7 +38,7 @@ def build_qubo(c, mu):
     n = len(c)
     qp = QuadraticProgram()
 
-    # binary variables x_s
+    # binary variables x_s , 
     for i in range(n):
         qp.binary_var(name=f"x_{i}")
 
