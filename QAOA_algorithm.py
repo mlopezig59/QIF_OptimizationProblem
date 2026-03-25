@@ -54,7 +54,7 @@ df = pd.read_csv("main_cities.csv")
 
 # parameters
 DISTANCE_THRESHOLD = 0.4
-city_number = 10
+city_number = 6
 mu = 1.1
 
 W = build_weight_matrix(df, DISTANCE_THRESHOLD, city_number)
@@ -66,7 +66,7 @@ qp = build_qubo(c, mu)
 def callback(eval_count, params, value, metadata):
     print(f"Iteration {eval_count} - value = {value}")
 
-qaoa = QAOA(sampler=StatevectorSampler(seed=123), optimizer=COBYLA(), reps=1, callback = callback)
+qaoa = QAOA(sampler=StatevectorSampler(seed=123), optimizer=COBYLA(maxiter=1000), reps=10, callback = callback)
 
 solver = MinimumEigenOptimizer(qaoa)
 
