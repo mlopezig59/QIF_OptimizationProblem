@@ -9,17 +9,12 @@ from qiskit_algorithms import QAOA
 from qiskit.primitives import StatevectorSampler
 from qiskit_algorithms.optimizers import COBYLA
 
-# ------------------------
 # Distance
-# ------------------------
 def distance(x1, y1, x2, y2):
     return math.sqrt((x1 - x2)**2 + (y1 - y2)**2)
 
-# ------------------------
-# Construire W (r -> s)
-# ------------------------
-def build_weight_matrix(df, threshold):
-    n = len(df)
+# Build weight matrix W
+def build_weight_matrix(df, threshold, n):
     W = np.zeros((n, n))
 
     for r in range(n):
@@ -30,24 +25,20 @@ def build_weight_matrix(df, threshold):
                     df.iloc[s]["latitude"], df.iloc[s]["longitude"]
                 )
                 if d < threshold:
-                    W[r, s] = df.iloc[r]["population_est"] / (1 + d)
+                    W[r, s] = 1
 
     return W
 
-# ------------------------
-# Construire coefficients c_s = sum_r w_rs
-# ------------------------
+# Build coefficients c_s = sum_r w_rs
 def compute_source_weights(W):
     return np.sum(W, axis=0)
 
-# ------------------------
-# Construire QUBO
-# ------------------------
-def build_qubo(c):
+# Build QUBO
+def build_qubo(c, mu):
     n = len(c)
     qp = QuadraticProgram()
 
-    # variables binaires x_s
+    # binary variables x_s
     for i in range(n):
         qp.binary_var(name=f"x_{i}")
 
@@ -58,35 +49,34 @@ def build_qubo(c):
 
     return qp
 
-# MAIN
+
 df = pd.read_csv("main_cities.csv")
 
 # parameters
 DISTANCE_THRESHOLD = 0.4
+city_number = 10
+mu = 1.1
 
-# construction
-W = build_weight_matrix(df, DISTANCE_THRESHOLD)
+W = build_weight_matrix(df, DISTANCE_THRESHOLD, city_number)
 c = compute_source_weights(W)
 
-qp = build_qubo(c)
+qp = build_qubo(c, mu)
 
 # QAOA
 def callback(eval_count, params, value, metadata):
     print(f"Iteration {eval_count} - value = {value}")
 
-qaoa = QAOA(sampler=StatevectorSampler(seed=123), optimizer=COBYLA(maxiter=30), callback = callback)
+qaoa = QAOA(sampler=StatevectorSampler(seed=123), optimizer=COBYLA(), reps=1, callback = callback)
 
 solver = MinimumEigenOptimizer(qaoa)
 
-print("Début solve...")
+print("Start solve...")
 start_time = datetime.now()
 result = solver.solve(qp)
 end_time = datetime.now()
 print(f"Time : {end_time-start_time} s")
-print("Solve terminé !")
+print("Solve finished !")
 
-# ------------------------
-# Résultats
-# ------------------------
-print("Solution binaire :", result.x)
-print("Valeur objectif :", result.fval)
+# Results
+print("Binary solution :", result.x)
+print("Target value :", result.fval)
