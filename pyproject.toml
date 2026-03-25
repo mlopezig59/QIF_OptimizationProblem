@@ -3,6 +3,7 @@ name = "qif-optimizationproblem"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
+<<<<<<< HEAD
 requires-python = ">=3.14"
 dependencies = [
     "datetime>=6.0",
@@ -11,5 +12,13 @@ dependencies = [
     "pandas>=3.0.1",
     "qiskit>=2.3.1",
     "qiskit-algorithms>=0.4.0",
+=======
+requires-python = ">=3.13"
+dependencies = [
+    "dimod>=0.12.21",
+    "matplotlib>=3.10.8",
+    "pandas>=3.0.1",
+    "qiskit>=2.3.1",
+>>>>>>> e7aa3f5b6cc4ea53f8bd85264a530d1cb6053fee
     "qiskit-optimization>=0.7.0",
 ]
